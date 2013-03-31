@@ -5,4 +5,4 @@ run_watchdog=1
 # Load module before starting watchdog
 watchdog_module="<%= node["watchdog"]["module"] %>"
 # Specify additional watchdog options here (see manpage).
-watchdog_options="<%= node["watchdog"]["module_options"] %>"
+watchdog_options="--softboot"
