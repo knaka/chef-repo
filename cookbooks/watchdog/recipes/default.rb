@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 #
 # Cookbook Name:: watchdog
 # Recipe:: default
@@ -13,4 +14,36 @@ template "watchdog" do
   owner "root"
   group "root"
   mode "0644"
+  notifies :restart, "service[watchdog]"
+end
+
+template "watchdog.conf" do
+	path "/etc/watchdog.conf"
+	source "watchdog.conf.erb"
+	owner "root"
+	group "root"
+	mode "0644"
+	notifies :restart, "service[watchdog]"
+end
+
+service "watchdog" do
+  action [ :enable , :start ]
+  # "restart" does not load the module
+  supports :status => true, :restart => false, :reload => false
+end
+
+template "panic reboot" do
+  path "/etc/sysctl.d/10-panic-reboot.conf"
+  source "panic-reboot.conf.erb"
+  owner "root"
+  group "root"
+  mode "0644"
+  notifies :run, "execute[sysctl reload]" 
+end
+
+# execute — Chef Docs http://docs.opscode.com/resource_execute.html
+execute "sysctl reload" do
+  command "sysctl --system --load"
+  # Run only when another resource notifies.
+  action :nothing
 end
