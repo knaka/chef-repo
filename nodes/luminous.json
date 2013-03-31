@@ -1,1 +1,6 @@
-{"run_list":["watchdog"]}
+{
+	"run_list": [
+		"watchdog",
+		"panic-reboot"
+	]
+}
