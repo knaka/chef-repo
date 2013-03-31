@@ -35,3 +35,10 @@ service "watchdog" do
   # "restart" does not load the module
   supports :status => true, :restart => false, :reload => false
 end
+
+bash "module" do
+  not_if "grep #{node["watchdog"]["module"]} /etc/modules"
+  code <<-EOC
+    echo #{node["watchdog"]["module"]} >> /etc/modules
+  EOC
+end
