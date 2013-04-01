@@ -12,10 +12,10 @@ git "#{Chef::Config[:file_cache_path]}/pt3" do
   repository "/arc/repos/pt3.git"
   reference "master"
   action :sync
-  notifies :run, "bash[install]"
+  notifies :run, "bash[pt3 installation]"
 end
 
-bash "install" do
+bash "pt3 installation" do
   cwd "#{Chef::Config[:file_cache_path]}/pt3"
   code <<-EOH
     make install
@@ -25,18 +25,17 @@ bash "install" do
   action :nothing
 end
 
-bash "module" do
+bash "pt3 boot time module loading" do
   not_if "grep pt3_drv /etc/modules"
   code <<-EOC
     echo pt3_drv >> /etc/modules
   EOC
 end
 
-template "pt3.conf" do
+template "pt3 module configuration" do
   path "/etc/modprobe.d/pt3.conf"
   source "pt3.conf.erb"
   owner "root"
   group "root"
   mode "0644"
 end
-

@@ -8,26 +8,10 @@
 # All rights reserved - Do Not Redistribute
 #
 
+# package — Chef Docs http://docs.opscode.com/resource_package.html
 package "watchdog" do
+  package_name "watchdog"
   action :install
-end
-
-template "watchdog" do
-  path "/etc/default/watchdog"
-  source "watchdog.erb"
-  owner "root"
-  group "root"
-  mode "0644"
-  notifies :restart, "service[watchdog]"
-end
-
-template "watchdog.conf" do
-	path "/etc/watchdog.conf"
-	source "watchdog.conf.erb"
-	owner "root"
-	group "root"
-	mode "0644"
-	notifies :restart, "service[watchdog]"
 end
 
 service "watchdog" do
@@ -36,7 +20,26 @@ service "watchdog" do
   supports :status => true, :restart => false, :reload => false
 end
 
-bash "module" do
+template "watchdog" do
+  path "/etc/watchdog.conf"
+  source "watchdog.conf.erb"
+  owner "root"
+  group "root"
+  mode "0644"
+  notifies :restart, resources(:service => "watchdog")
+end
+
+template "watchdog service" do
+  path "/etc/default/watchdog"
+  source "watchdog.erb"
+  owner "root"
+  group "root"
+  mode "0644"
+  notifies :restart, resources(:service => "watchdog")
+end
+
+
+bash "watchdog boot time module loading" do
   not_if "grep #{node["watchdog"]["module"]} /etc/modules"
   code <<-EOC
     echo #{node["watchdog"]["module"]} >> /etc/modules

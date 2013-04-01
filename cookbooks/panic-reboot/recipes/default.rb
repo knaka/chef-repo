@@ -7,17 +7,17 @@
 # All rights reserved - Do Not Redistribute
 #
 
-template "panic-reboot" do
+template "panic reboot" do
   path "/etc/sysctl.d/10-panic-reboot.conf"
   source "panic-reboot.conf.erb"
   owner "root"
   group "root"
   mode "0644"
-  notifies :run, "execute[sysctl reload]" 
+  notifies :run, "execute[panic reboot sysctl reloading]" 
 end
 
 # execute — Chef Docs http://docs.opscode.com/resource_execute.html
-execute "sysctl reload" do
+execute "panic reboot sysctl reloading" do
   command "sysctl --system --load"
   # Run only when another resource notifies.
   action :nothing
